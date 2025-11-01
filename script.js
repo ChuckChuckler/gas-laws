@@ -3,6 +3,7 @@ const KPA_TO_ATM = 101.3;
 const MMHG_TO_ATM = 760;
 const ML_TO_L = 1000;
 
+let GAS_CONSTANT = 0.0821;
 
 class Reaction{
     constructor(reactant1, reactant2, product1, product2, coeffR1, coeffR2, coeffP1, coeffP2, massR1, massR2){
@@ -61,10 +62,10 @@ class Reaction{
 
         if(choice==1){
             let reactantMass = Math.round(((moles*this.coeffR1)/this.coeffP2)*this.massR1*(10**sigfigs))/(10**sigfigs);
-            return [this.reactant1, reactantMass];
+            return [this.reactant1, reactantMass, this.massR1, this.coeffR1];
         }else{
             let reactantMass = Math.round(((moles*this.coeffR2)/this.coeffP2)*this.massR2*(10**sigfigs))/(10**sigfigs);
-            return [this.reactant2, reactantMass];
+            return [this.reactant2, reactantMass, this.massR2, this.coeffR2];
         }
     }
 
@@ -181,7 +182,7 @@ function run(){
             sigfigs=T.toString().length;
         }
 
-        let nUnrounded = (P_ideal*V_ideal)/(0.0821*T_ideal);
+        let nUnrounded = (P_ideal*V_ideal)/(GAS_CONSTANT*T_ideal);
         let n = Math.round(nUnrounded*(10**2))/(10**2);
 
         if(choice==1 || chosen.reactions==null){
@@ -198,19 +199,24 @@ function run(){
             }
         }else if(choice==2 && chosen.reactions!=null){
             //find V
-            let choice = randint(1, 2);
+            let choice = randint(2, 3);
             let reaction = chosen.reactions[randint(1, Object.keys(chosen.reactions).length+1)];
             console.log(reaction.toString());
             console.log(`${P} ${pUnit}, ${T} ${tUnit}`);
             if(choice==1){
-                //recalc V
                 let calcResult = reaction.calc(nUnrounded, sigfigs);
+                let V = (nUnrounded*(GAS_CONSTANT)*T_ideal)/P_ideal;
+                //let vRounded = Math.round(V*(10**sigfigs))/(10**sigfigs)
                 console.log(`${calcResult[1]} g of ${calcResult[0]}`);
-                console.log(`${n} moles of ${chosen.formula}`);
+                console.log(`${vRounded} L of ${chosen.formula}`);
             }else{
+                //recalc V
                 let calcResult = reaction.calcWithExcess(nUnrounded, sigfigs);
+                let V = (nUnrounded*(GAS_CONSTANT)*T_ideal)/P_ideal;
+                let vRounded = Math.round(V*(10**sigfigs))/(10**sigfigs)
                 console.log(`${calcResult[0][1]} g of ${calcResult[0][0]}`);
                 console.log(`${calcResult[1][1]} g of ${calcResult[1][0]}`);
+                console.log(`${vRounded} L of ${chosen.formula}`);
             }
         }
     }else if(choice==2){
