@@ -190,7 +190,7 @@ function gen(){
         document.getElementById("reaction").innerText = reaction.toString();
         let calcResult = reaction.calc(nUnrounded, sigfigs);
         document.getElementById("problem").innerText = `Calculate grams of ${calcResult[0]}`;
-        document.getElementById("answer").innerText = `${calcResult[1]} g of ${calcResult[0]} required`;
+        document.getElementById("answer").innerText = `Answer: ${calcResult[1]} g of ${calcResult[0]} required`;
     }else if(choice==2 && chosen.reactions!=null){
         //find V
         let choice = randint(1, 3);
@@ -203,7 +203,7 @@ function gen(){
             let vRounded = Math.round(V*(10**sigfigs))/(10**sigfigs);
             document.getElementById("reactants").innerText = `${calcResult[1]} g of ${calcResult[0]}`;
             document.getElementById("problem").innerText = `Calculate L of ${chosen.formula}`;
-            document.getElementById("answer").innerText = `${vRounded} L of ${chosen.formula}`;
+            document.getElementById("answer").innerText = `Answer: ${vRounded} L of ${chosen.formula}`;
         }else{
             //recalc V
             let calcResult = reaction.calcWithExcess(nUnrounded, sigfigs);
@@ -211,7 +211,7 @@ function gen(){
             let vRounded = Math.round(V*(10**sigfigs))/(10**sigfigs)
             document.getElementById("reactants").innerText = `${calcResult[0][1]} g of ${calcResult[0][0]}, ${calcResult[1][1]} g of ${calcResult[1][0]}`;
             document.getElementById("problem").innerText = `Calculate L of ${chosen.formula}`;
-            document.getElementById("answer").innerText = `${vRounded} L of ${chosen.formula}`;
+            document.getElementById("answer").innerText = `Answer: ${vRounded} L of ${chosen.formula}`;
         }
     }
 }
