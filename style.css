@@ -1,0 +1,52 @@
+.answerDiv{
+    visibility: hidden;
+}
+
+body{
+    background-color: #232c25;
+    overflow: hidden;
+}
+
+.title{
+    color: #63bed2;
+    text-align: center;
+    font-size: 4.25vw;
+}
+
+.problemDiv{
+    border: 1.5px solid #8965d6;
+    box-sizing: border-box;
+    padding: 15px;
+    background-color: #ae93e782;
+}
+
+.flex{
+    display: grid;
+    grid-template-rows: 20vh 75vh;
+}
+
+.btnFlex{
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+}
+
+button{
+    width: 49%;
+    height: 40px;
+    background-color: #4f838f;
+    color: #a6d8e3;
+    font-weight: 900;
+}
+
+button:hover{
+    background-color: #406770;
+}
+
+/*
+dark green - #17301C
+dark cyan - #379392
+moonstone - #4FB0C6
+silver lake blue - #4F86C6
+purple - #744FC6
+*/

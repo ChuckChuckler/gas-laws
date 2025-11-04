@@ -120,109 +120,107 @@ function randdec(min, max){
     return [Math.round((Math.random() + randint(min, max))*(10**int))/(10**int), int];
 }
 
-function run(){
+function gen(){
     let index = randint(0, Object.keys(gasDict).length);   
     let chosen = gasDict[Object.keys(gasDict)[1]];
-    let choice = randint(1, 2); //change to 3 outside of testing
-    if(choice==1){
-        //pv=nrt
-        console.log("pv=nrt");
-        //let choice = randint(2, 3); //change to 3 outside of testing
-        let choice = 2;
-        let P_ideal = randdec(1, 5);
-        let decP = P_ideal[1];
-        P_ideal = P_ideal[0];
-        let V_ideal = randdec(1, 100);
-        let decV = V_ideal[1];
-        V_ideal = V_ideal[0];
-        let T_ideal = randint(0, 500);
+    document.getElementById("answerDiv").style.visibility = "hidden";
+    document.getElementById("ansBtn").style.display = "block";
+    let choice = randint(1, 3);
+    //let choice = 2;
+    let P_ideal = randdec(1, 5);
+    let decP = P_ideal[1];
+    P_ideal = P_ideal[0];
+    let V_ideal = randdec(1, 100);
+    let decV = V_ideal[1];
+    V_ideal = V_ideal[0];
+    let T_ideal = randint(0, 500);
 
-        let P=P_ideal;
-        let V=V_ideal;
-        let T=T_ideal;
+    let P=P_ideal;
+    let V=V_ideal;
+    let T=T_ideal;
 
-        let pUnit = "atm";
-        let vUnit = "L";
-        let tUnit = "Kelvin";
+    let pUnit = "atm";
+    let vUnit = "L";
+    let tUnit = "Kelvin";
 
-        let pConversion = randint(1,5);
-        if(pConversion==2){
-            P=Math.round((P_ideal*PSI_TO_ATM)*(10**decP))/(10**decP);
-            pUnit = "p.s.i";
-        }else if(pConversion==3){
-            P=Math.round((P_ideal*KPA_TO_ATM)*(10**decP))/(10**decP);
-            pUnit = "kPa";
-        }else if(pConversion==4){
-            P=Math.round((P_ideal*MMHG_TO_ATM)*(10**decP))/(10**decP);
-            pUnit = "mmHg";
+    let pConversion = randint(1,5);
+    if(pConversion==2){
+        P=Math.round((P_ideal*PSI_TO_ATM)*(10**decP))/(10**decP);
+        pUnit = "p.s.i";
+    }else if(pConversion==3){
+        P=Math.round((P_ideal*KPA_TO_ATM)*(10**decP))/(10**decP);
+        pUnit = "kPa";
+    }else if(pConversion==4){
+        P=Math.round((P_ideal*MMHG_TO_ATM)*(10**decP))/(10**decP);
+        pUnit = "mmHg";
+    }
+
+    let vConversion = randint(1, 3);
+    if(vConversion==2){
+        V=Math.round((V_ideal*ML_TO_L)*(10**decV))/(10**decV);
+        vUnit = "mL";
+    }
+
+    let tConversion = randint(1, 3);
+    if(tConversion==2){
+        T=T_ideal-273;
+        tUnit = "°C";
+    }
+
+    let sigfigs=100;
+    if(P.toString().replaceAll("0", "").length < sigfigs){
+        sigfigs=P.toString().length;
+    }
+
+    if(V.toString().replaceAll("0", "").length < sigfigs){
+        sigfigs=V.toString().length;
+    }
+
+    if(T.toString().replaceAll("0", "").length < sigfigs){
+        sigfigs=T.toString().length;
+    }
+
+    let nUnrounded = (P_ideal*V_ideal)/(GAS_CONSTANT*T_ideal);
+    let n = Math.round(nUnrounded*(10**2))/(10**2);
+
+    if(choice==1 || chosen.reactions==null){
+        document.getElementById("atmosphere").innerText = (`${P} ${pUnit}, ${T} ${tUnit}`);
+        document.getElementById("reactants").innerText = `${V} ${vUnit} of H₂`;
+        let reaction = chosen.reactions[randint(1, Object.keys(chosen.reactions).length+1)];
+        document.getElementById("reaction").innerText = reaction.toString();
+        let calcResult = reaction.calc(nUnrounded, sigfigs);
+        document.getElementById("problem").innerText = `Calculate grams of ${calcResult[0]}`;
+        document.getElementById("answer").innerText = `${calcResult[1]} g of ${calcResult[0]} required`;
+    }else if(choice==2 && chosen.reactions!=null){
+        //find V
+        let choice = randint(1, 3);
+        let reaction = chosen.reactions[randint(1, Object.keys(chosen.reactions).length+1)];
+        document.getElementById("reaction").innerText = reaction.toString();
+        document.getElementById("atmosphere").innerText = `${P} ${pUnit}, ${T} ${tUnit}`;
+        if(choice==1){
+            let calcResult = reaction.calc(nUnrounded, sigfigs);
+            let V = (nUnrounded*(GAS_CONSTANT)*T_ideal)/P_ideal;
+            let vRounded = Math.round(V*(10**sigfigs))/(10**sigfigs);
+            document.getElementById("reactants").innerText = `${calcResult[1]} g of ${calcResult[0]}`;
+            document.getElementById("problem").innerText = `Calculate L of ${chosen.formula}`;
+            document.getElementById("answer").innerText = `${vRounded} L of ${chosen.formula}`;
+        }else{
+            //recalc V
+            let calcResult = reaction.calcWithExcess(nUnrounded, sigfigs);
+            let V = (nUnrounded*(GAS_CONSTANT)*T_ideal)/P_ideal;
+            let vRounded = Math.round(V*(10**sigfigs))/(10**sigfigs)
+            document.getElementById("reactants").innerText = `${calcResult[0][1]} g of ${calcResult[0][0]}, ${calcResult[1][1]} g of ${calcResult[1][0]}`;
+            document.getElementById("problem").innerText = `Calculate L of ${chosen.formula}`;
+            document.getElementById("answer").innerText = `${vRounded} L of ${chosen.formula}`;
         }
-
-        let vConversion = randint(1, 3);
-        if(vConversion==2){
-            V=Math.round((V_ideal*ML_TO_L)*(10**decV))/(10**decV);
-            vUnit = "mL";
-        }
-
-        let tConversion = randint(1, 3);
-        if(tConversion==2){
-            T=T_ideal-273;
-            tUnit = "°C";
-        }
-
-        let sigfigs=100;
-        if(P.toString().replaceAll("0", "").length < sigfigs){
-            sigfigs=P.toString().length;
-        }
-
-        if(V.toString().replaceAll("0", "").length < sigfigs){
-            sigfigs=V.toString().length;
-        }
-
-        if(T.toString().replaceAll("0", "").length < sigfigs){
-            sigfigs=T.toString().length;
-        }
-
-        let nUnrounded = (P_ideal*V_ideal)/(GAS_CONSTANT*T_ideal);
-        let n = Math.round(nUnrounded*(10**2))/(10**2);
-
-        if(choice==1 || chosen.reactions==null){
-            console.log(`${P} ${pUnit}, ${V} ${vUnit}, ${T} ${tUnit}`);
-            let choice = randint(1, 3); //change to 3 outside of testing
-            if(choice==1 || chosen.reactions==null){
-                let mmass = Math.round((nUnrounded*chosen.mass)*(100))/100;
-                console.log(`${mmass} grams of ${chosen.formula}`);
-            }else{
-                let reaction = chosen.reactions[randint(1, Object.keys(chosen.reactions).length+1)];
-                console.log(reaction.toString());
-                let calcResult = reaction.calc(nUnrounded, sigfigs);
-                console.log(`${calcResult[1]} g of ${calcResult[0]} required`);
-            }
-        }else if(choice==2 && chosen.reactions!=null){
-            //find V
-            let choice = randint(2, 3);
-            let reaction = chosen.reactions[randint(1, Object.keys(chosen.reactions).length+1)];
-            console.log(reaction.toString());
-            console.log(`${P} ${pUnit}, ${T} ${tUnit}`);
-            if(choice==1){
-                let calcResult = reaction.calc(nUnrounded, sigfigs);
-                let V = (nUnrounded*(GAS_CONSTANT)*T_ideal)/P_ideal;
-                //let vRounded = Math.round(V*(10**sigfigs))/(10**sigfigs)
-                console.log(`${calcResult[1]} g of ${calcResult[0]}`);
-                console.log(`${vRounded} L of ${chosen.formula}`);
-            }else{
-                //recalc V
-                let calcResult = reaction.calcWithExcess(nUnrounded, sigfigs);
-                let V = (nUnrounded*(GAS_CONSTANT)*T_ideal)/P_ideal;
-                let vRounded = Math.round(V*(10**sigfigs))/(10**sigfigs)
-                console.log(`${calcResult[0][1]} g of ${calcResult[0][0]}`);
-                console.log(`${calcResult[1][1]} g of ${calcResult[1][0]}`);
-                console.log(`${vRounded} L of ${chosen.formula}`);
-            }
-        }
-    }else if(choice==2){
-        //combined gas law
-        console.log("combined gas law");
     }
 }
 
-run();
+function showAns(){
+    document.getElementById("answerDiv").style.visibility = "visible";
+    document.getElementById("ansBtn").style.display = "none";
+}
+
+window.onload = function(){
+    gen();
+}
